@@ -14,23 +14,32 @@ jobs:
   terraform-check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
+      
       - name: Format Terraform
         run: terraform fmt -check
 
   terraform-plan:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v1
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: arn:aws:iam::381491958741:role/GithubActionsRole  # Replace with your actual role ARN
-          aws-region: us-east-1  # Set your AWS region
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+          role-session-name: GitHubActionsSession
+          audience: sts.amazonaws.com
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+
       - name: Terraform Init and Plan
         run: |
           terraform init
@@ -40,16 +49,21 @@ jobs:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v1
+      - name: Checkout code
+        uses: actions/checkout@v2
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: arn:aws:iam::381491958741:role/GithubActionsRole  # Replace with your actual role ARN
-          aws-region: us-east-1  # Set your AWS region
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+          role-session-name: GitHubActionsSession
+          audience: sts.amazonaws.com
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+
       - name: Terraform Init and Apply
         run: |
           terraform init
           terraform apply -auto-approve
-
