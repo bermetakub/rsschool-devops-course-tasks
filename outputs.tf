@@ -9,7 +9,3 @@ output "VPC_CIDR_block" {
 output "subnet1_id" {
   value = aws_subnet.subnet-1.id
 }
-
-output "instanceID" {
-  value = aws_instance.instance-hw.id
-}
