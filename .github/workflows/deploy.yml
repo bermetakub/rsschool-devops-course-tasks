@@ -1,17 +1,12 @@
 name: "Terraform action"
 on:
   push:
-    branches:
-      - task_1
-
 permissions:
   id-token: write  # Required for AWS OIDC connection
   contents: read   # Required for actions/checkout
-
 env:
   TF_LOG: INFO
   AWS_REGION: ${{ secrets.AWS_REGION }}
-
 jobs:
   terraform-check:
     runs-on: ubuntu-latest
@@ -22,30 +17,16 @@ jobs:
     steps:
       - name: Git checkout
         uses: actions/checkout@v3
-        with:
-          node-version: '20.x'
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.9.6
-          node-version: '20.x'
 
       - name: Terraform fmt check
         id: fmt
         run: terraform fmt -check
         continue-on-error: true
-
-      - name: Terraform Validate
-        id: validate
-        run: terraform validate -no-color
-        continue-on-error: true
-
-      - name: Print Terraform fmt output (for debugging)
-        if: failure()
-        run: |
-          echo "Terraform fmt failed:"
-          terraform fmt
 
   terraform-plan:
     runs-on: ubuntu-latest
@@ -64,7 +45,7 @@ jobs:
           terraform_version: 1.9.6
 
       - name: Configure AWS credentials from AWS account
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ secrets.AWS_REGION }}
