@@ -3,16 +3,17 @@ on:
   push:
     branches:
       - task_1
+
 permissions:
-  id-token: write # Required for AWS OIDC connection
-  contents: read # Required for actions/checkout
+  id-token: write  # Required for AWS OIDC connection
+  contents: read   # Required for actions/checkout
 
 env:
   TF_LOG: INFO
   AWS_REGION: ${{ secrets.AWS_REGION }}
 
 jobs:
-  format:
+  terraform-check:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -27,48 +28,29 @@ jobs:
         with:
           terraform_version: 1.2.5
 
-      - name: Terraform fmt
+      - name: Terraform fmt check
         id: fmt
         run: terraform fmt -check
-        continue-on-error: true
-
-  validate:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
-        working-directory: .
-    needs: format
-    steps:
-      - name: Git checkout
-        uses: actions/checkout@v3
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.2.5
-
-      - name: Terraform Init
-        id: init
-        env:
-          AWS_BUCKET_NAME: ${{ secrets.AWS_BUCKET_NAME }}
-          AWS_BUCKET_KEY_NAME: ${{ secrets.AWS_BUCKET_KEY_NAME }}
-        run: terraform init -backend-config="bucket=${AWS_BUCKET_NAME}" -backend-config="key=${AWS_BUCKET_KEY_NAME}" -backend-config="region=${AWS_REGION}"
 
       - name: Terraform Validate
         id: validate
         run: terraform validate -no-color
 
-  deploy:
+  terraform-plan:
     runs-on: ubuntu-latest
     defaults:
       run:
         shell: bash
         working-directory: .
-    needs: validate
+    needs: terraform-check
     steps:
       - name: Git checkout
         uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.2.5
 
       - name: Configure AWS credentials from AWS account
         uses: aws-actions/configure-aws-credentials@v1
@@ -77,15 +59,40 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
           role-session-name: GitHub-OIDC-TERRAFORM
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.2.5
+      - name: Terraform Init
+        id: init
+        env:
+          AWS_BUCKET_NAME: ${{ secrets.AWS_BUCKET_NAME }}
+          AWS_BUCKET_KEY_NAME: ${{ secrets.AWS_BUCKET_KEY_NAME }}
+        run: terraform init -backend-config="bucket=${AWS_BUCKET_NAME}" -backend-config="key=${AWS_BUCKET_KEY_NAME}" -backend-config="region=${AWS_REGION}"
 
       - name: Terraform Plan
         id: plan
         run: terraform plan -no-color
 
+  terraform-apply:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: .
+    needs: terraform-plan
+    if: github.ref == 'refs/heads/task_1'
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.2.5
+
+      - name: Configure AWS credentials from AWS account
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+          role-session-name: GitHub-OIDC-TERRAFORM
+
       - name: Terraform Apply
-        if: github.ref == 'refs/heads/task_1'
         run: terraform apply -auto-approve -input=false
