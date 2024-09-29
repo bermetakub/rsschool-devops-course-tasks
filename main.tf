@@ -12,3 +12,4 @@ resource "aws_instance" "instance-hw" {
   instance_type = var.instance-type
   subnet_id     = aws_subnet.subnet-1.id
 }
+
