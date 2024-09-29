@@ -39,6 +39,11 @@ jobs:
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+          role-session-name: GitHubActionsSession
+          audience: sts.amazonaws.com
 
       - name: Terraform Init and Plan
         run: |
