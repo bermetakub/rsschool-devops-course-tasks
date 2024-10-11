@@ -82,7 +82,7 @@ resource "aws_network_acl_rule" "inbound_https" {
 # Inbound rule to allow SSH traffic (only from the public subnet to the private subnet)
 resource "aws_network_acl_rule" "inbound_ssh" {
   network_acl_id = aws_network_acl.main_nacl.id
-  rule_number    = 120
+  rule_number    = 121
   egress         = false
   protocol       = "tcp"
   rule_action    = "allow"
