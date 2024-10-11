@@ -1,11 +1,19 @@
-output "VPC_ID" {
-  value = aws_vpc.VPC-bermet.id
+output "public_subnets" {
+  description = "List of IDs of public subnets"
+  value       = { for i, v in aws_subnet.public_subnet : i => v.id }
 }
 
-output "VPC_CIDR_block" {
-  value = aws_vpc.VPC-bermet.cidr_block
+output "private_subnets" {
+  description = "List of IDs of private subnets"
+  value       = { for i, v in aws_subnet.private_subnet : i => v.id }
 }
 
-output "subnet1_id" {
-  value = aws_subnet.subnet-1.id
+output "vpc_id" {
+  description = "The ID of the VPC"
+  value       = aws_vpc.vpc.id
+}
+
+output "igw_id" {
+  description = "The ID of the IGW"
+  value       = aws_internet_gateway.igw.id
 }
