@@ -86,18 +86,7 @@ resource "aws_network_acl_rule" "inbound_ssh1" {
   egress         = false
   protocol       = "tcp"
   rule_action    = "allow"
-  cidr_block     = "10.0.1.0/24" # Loop over all public subnets # Restrict SSH access from the public subnet
-  from_port      = 22
-  to_port        = 22
-}
-
-resource "aws_network_acl_rule" "inbound_ssh" {
-  network_acl_id = aws_network_acl.main_nacl.id
-  rule_number    = 121
-  egress         = false
-  protocol       = "tcp"
-  rule_action    = "allow"
-  cidr_block     = "10.0.2.0/24" # Loop over all public subnets # Restrict SSH access from the public subnet
+  cidr_block     = "0.0.0.0/0" # Loop over all public subnets # Restrict SSH access from the public subnet
   from_port      = 22
   to_port        = 22
 }
