@@ -1,12 +1,19 @@
 name: "Terraform action"
 on:
   push:
+    branches:
+      - main
+      - task_2
+  workflow_dispatch:  # Allows manual trigger for 'apply'
+
 permissions:
   id-token: write  # Required for AWS OIDC connection
   contents: read   # Required for actions/checkout
+
 env:
   TF_LOG: INFO
   AWS_REGION: ${{ secrets.AWS_REGION }}
+
 jobs:
   terraform-check:
     runs-on: ubuntu-latest
@@ -62,40 +69,6 @@ jobs:
         id: plan
         run: terraform plan -no-color
 
-  terraform-apply:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
-        working-directory: .
-    needs: terraform-plan
-    if: github.event.inputs.action == 'apply'
-    steps:
-      - name: Git checkout
-        uses: actions/checkout@v3
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.9.6
-
-      - name: Configure AWS credentials from AWS account
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: ${{ secrets.AWS_REGION }}
-          role-session-name: GitHub-OIDC-TERRAFORM
-
-      - name: Terraform Init
-        id: init
-        env:
-          AWS_BUCKET_NAME: ${{ secrets.AWS_BUCKET_NAME }}
-          AWS_BUCKET_KEY_NAME: ${{ secrets.AWS_BUCKET_KEY_NAME }}
-        run: terraform init -backend-config="bucket=${AWS_BUCKET_NAME}" -backend-config="key=${AWS_BUCKET_KEY_NAME}" -backend-config="region=${AWS_REGION}"
-
-      - name: Terraform Apply
-        run: terraform apply -auto-approve -input=false
-
   terraform-destroy:
     runs-on: ubuntu-latest
     defaults:
@@ -103,7 +76,7 @@ jobs:
         shell: bash
         working-directory: .
     needs: terraform-plan
-    if: github.event.inputs.action == 'destroy'  # Ensure manual or triggered run
+    if: github.event_name == 'push'  # Automatic destroy only on push
     steps:
       - name: Git checkout
         uses: actions/checkout@v3
@@ -129,3 +102,37 @@ jobs:
 
       - name: Terraform Destroy
         run: terraform destroy -auto-approve -input=false
+
+  terraform-apply:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: .
+    needs: terraform-plan
+    if: ${{ github.event_name == 'workflow_dispatch' }}  # Apply runs only on manual trigger
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.9.6
+
+      - name: Configure AWS credentials from AWS account
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+          role-session-name: GitHub-OIDC-TERRAFORM
+
+      - name: Terraform Init
+        id: init
+        env:
+          AWS_BUCKET_NAME: ${{ secrets.AWS_BUCKET_NAME }}
+          AWS_BUCKET_KEY_NAME: ${{ secrets.AWS_BUCKET_KEY_NAME }}
+        run: terraform init -backend-config="bucket=${AWS_BUCKET_NAME}" -backend-config="key=${AWS_BUCKET_KEY_NAME}" -backend-config="region=${AWS_REGION}"
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve -input=false
