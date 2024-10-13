@@ -11,18 +11,10 @@
 ## Usage
 
 ```terraform
-module "autoscaling" {  
-  source              = "../../modules/autoscaling"  
-  ami                 = data.aws_ami.Ubuntu.id  
-  instance_type       = "t2.micro"  
-  desired_size        = 2  
-  max_size            = 3  
-  min_size            = 1  
-  vpc_zone_Identifier = values(module.networking.private_subnets)  
-  target_group        = [module.alb.default_target_group_arn]  
-  vpcid               = module.networking.vpc_id  
-  ingress_ports       = [22, 80, 443]  
-}
+Define your own data in terraform.tfvars file
+public_cidrs  = ["10.0.1.0/24", "10.0.2.0/24"]
+private_cidrs = ["10.0.3.0/24", "10.0.4.0/24"]
+ingress_ports = [22, 80, 443]
 ```
 
 Then perform the following commands on the root folder:
