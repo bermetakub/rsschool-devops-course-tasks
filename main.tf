@@ -39,33 +39,34 @@ resource "aws_subnet" "private_subnet" {
 }
 
 # Public EC2 instance in one of the public subnets
-resource "aws_instance" "public_instance" {
-  ami                         = var.ami                                                              # Use the appropriate AMI ID (Amazon Machine Image)
-  instance_type               = var.instance_type                                                    # Specify the instance type, e.g., "t2.micro"
-  subnet_id                   = aws_subnet.public_subnet[sort(keys(aws_subnet.public_subnet))[0]].id # Select the first public subnet
-  associate_public_ip_address = true                                                                 # Since this is a public instance
-  key_name                    = var.key_name                                                         # Specify the SSH key to use for access
+# resource "aws_instance" "public_instance" {
+#   ami                         = var.ami                                                              # Use the appropriate AMI ID (Amazon Machine Image)
+#   instance_type               = var.instance_type                                                    # Specify the instance type, e.g., "t2.micro"
+#   subnet_id                   = aws_subnet.public_subnet[sort(keys(aws_subnet.public_subnet))[0]].id # Select the first public subnet
+#   associate_public_ip_address = true                                                                 # Since this is a public instance
+#   key_name                    = var.key_name                                                         # Specify the SSH key to use for access
 
-  tags = {
-    Name = "${var.name}-public-instance"
-  }
+#   tags = {
+#     Name = "${var.name}-public-instance"
+#   }
 
-  # Security group for public instance
-  vpc_security_group_ids = [aws_security_group.public_sg.id]
-}
+#   # Security group for public instance
+#   vpc_security_group_ids = [aws_security_group.public_sg.id]
+# }
 
 # Private EC2 instance in one of the private subnets
-resource "aws_instance" "private_instance" {
-  ami                         = var.ami                                                                # Use the appropriate AMI ID
-  instance_type               = var.instance_type                                                      # Specify the instance type
-  subnet_id                   = aws_subnet.private_subnet[sort(keys(aws_subnet.private_subnet))[0]].id # Select the first private subnet
-  associate_public_ip_address = false                                                                  # No public IP for private instance
-  key_name                    = var.key_name                                                           # Specify the SSH key
+# resource "aws_instance" "private_instance" {
+#   ami                         = var.ami                                                                # Use the appropriate AMI ID
+#   instance_type               = var.instance_type                                                      # Specify the instance type
+#   subnet_id                   = aws_subnet.private_subnet[sort(keys(aws_subnet.private_subnet))[0]].id # Select the first private subnet
+#   associate_public_ip_address = false                                                                  # No public IP for private instance
+#   key_name                    = var.key_name                                                           # Specify the SSH key
 
-  tags = {
-    Name = "${var.name}-private-instance"
-  }
+#   tags = {
+#     Name = "${var.name}-private-instance"
+#   }
 
-  # Security group for private instance
-  vpc_security_group_ids = [aws_security_group.private_sg.id]
-}
+#   # Security group for private instance
+#   vpc_security_group_ids = [aws_security_group.private_sg.id]
+# }
+
