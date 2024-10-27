@@ -34,6 +34,21 @@ resource "aws_security_group" "private_sg" {
     cidr_blocks = [for subnet in aws_subnet.public_subnet : subnet.cidr_block] # Allow SSH from the public subnet
   }
 
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = [for subnet in aws_subnet.public_subnet : subnet.cidr_block] # Allow SSH from the public subnet
+  } 
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = [for subnet in aws_subnet.public_subnet : subnet.cidr_block] # Allow SSH from the public subnet
+  } 
+
+
   egress {
     from_port   = 0
     to_port     = 0

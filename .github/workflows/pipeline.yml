@@ -4,6 +4,7 @@ on:
     branches:
       - main
       - task_2
+      - task3
   workflow_dispatch:  # Allows manual trigger for 'apply'
 
 permissions:
@@ -76,7 +77,7 @@ jobs:
         shell: bash
         working-directory: .
     needs: terraform-plan
-    if: github.event_name == 'push'  # Automatic destroy only on push
+    if: github.event_name == 'push'
     steps:
       - name: Git checkout
         uses: actions/checkout@v3
@@ -110,7 +111,7 @@ jobs:
         shell: bash
         working-directory: .
     needs: terraform-plan
-    if: ${{ github.event_name == 'workflow_dispatch' }}  # Apply runs only on manual trigger
+    if: ${{ github.event_name == 'workflow_dispatch' }}
     steps:
       - name: Git checkout
         uses: actions/checkout@v3
