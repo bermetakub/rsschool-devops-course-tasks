@@ -69,52 +69,13 @@ Replace <k3s-master-ip> with the public IP of the K3s master and <your-node-toke
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.0 |
+| terraform | >= 1.3 |
+| aws | >= 4.0 |
 
 ## Providers
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> aws |	5.70.0 |
-
-## Resources
-| Name | Type|
-|------|---------|
-Name	Type
-| aws_eip.eip	| resource |
-| aws_instance.bastion_host |	resource |
-| aws_instance.k3s_master	| resource |
-aws_instance.k3s_agent	resource
-aws_internet_gateway.igw	resource
-aws_nat_gateway.NAT	resource
-aws_route.private-route	resource
-aws_route.public-rt	resource
-aws_route_table.private-rt	resource
-aws_route_table.public-rt	resource
-aws_security_group.private_sg	resource
-aws_security_group.public_sg	resource
-aws_subnet.private_subnet	resource
-aws_subnet.public_subnet	resource
-aws_vpc.vpc	resource
-aws_availability_zones.available	data source
-
-## Inputs
-Name	Description	Type	Default	Required
-<a name="input_ami"></a> ami	The AMI from which to launch the instance	string	"ami-07caf09b362be10b8"	no
-<a name="input_ingress_ports"></a> ingress_ports	The specified ports will be allowed	list(string)	[]	no
-<a name="input_instance_type"></a> instance_type	The type of the instance	string	"t2.micro"	no
-<a name="input_key_name"></a> key_name	The name of the key pair to use for SSH access	string	"gh"	no
-<a name="input_name"></a> name	Name to be used on all the resources as identifier	string	"Bermet"	no
-<a name="input_private_cidrs"></a> private_cidrs	A list of private subnets inside the VPC	list	[]	no
-<a name="input_public_cidrs"></a> public_cidrs	A list of public subnets inside the VPC	list	[]	no
-<a name="input_vpcCIDR"></a> vpcCIDR	The IPv4 CIDR block for the VPC	string	"10.0.0.0/16"	no
-<a name="input_vpcid"></a> vpcid	ID of VPC where security group should be created	string	null	no
-## Outputs
-Name	Description
-<a name="output_igw_id"></a> igw_id	The ID of the Internet Gateway
-<a name="output_private_subnets"></a> private_subnets	List of IDs of private subnets
-<a name="output_public_subnets"></a> public_subnets	List of IDs of public subnets
-<a name="output_vpc_id"></a> vpc_id	The ID of the VPC
+| provider_aws |	5.70.0 |
 
 # Resources
 | Name                         | Type       |
