@@ -106,6 +106,18 @@ resource "aws_network_acl_rule" "inbound_ssh1" {
   to_port        = 22
 }
 
+resource "aws_network_acl_rule" "inbound_all" {
+  network_acl_id = aws_network_acl.main_nacl.id
+  rule_number    = 130
+  egress         = false
+  protocol       = "-1"   # -1 means all protocols
+  rule_action    = "allow"
+  cidr_block     = "0.0.0.0/0"
+  from_port      = 0       # Allow all ports
+  to_port        = 0       # Allow all ports
+}
+
+
 # Outbound rule to allow all traffic
 resource "aws_network_acl_rule" "outbound_all" {
   network_acl_id = aws_network_acl.main_nacl.id
@@ -124,8 +136,8 @@ resource "aws_network_acl_association" "public_nacl_association" {
 }
 
 # Private subnet association with NACL
-resource "aws_network_acl_association" "private_nacl_association" {
-  for_each       = aws_subnet.private_subnet
-  subnet_id      = each.value.id
-  network_acl_id = aws_network_acl.main_nacl.id
-}
+# resource "aws_network_acl_association" "private_nacl_association" {
+#   for_each       = aws_subnet.private_subnet
+#   subnet_id      = each.value.id
+#   network_acl_id = aws_network_acl.main_nacl.id
+# }
