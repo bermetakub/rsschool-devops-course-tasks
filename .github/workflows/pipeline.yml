@@ -37,7 +37,7 @@ jobs:
         run: terraform fmt -check
         continue-on-error: true
 
-  terraform-plan:
+  terraform-apply:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -105,7 +105,7 @@ jobs:
       - name: Terraform Destroy
         run: terraform destroy -auto-approve -input=false
 
-  terraform-apply:
+  deploy-application:
     runs-on: ubuntu-latest
     defaults:
       run:
