@@ -135,7 +135,7 @@ resource "aws_network_acl_association" "public_nacl_association" {
   network_acl_id = aws_network_acl.main_nacl.id
 }
 
-Private subnet association with NACL
+# Private subnet association with NACL
 resource "aws_network_acl_association" "private_nacl_association" {
   for_each       = aws_subnet.private_subnet
   subnet_id      = each.value.id
