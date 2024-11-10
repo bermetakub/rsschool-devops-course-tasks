@@ -71,7 +71,7 @@ jobs:
         id: plan
         run: terraform plan -no-color
 
-  terraform-destroy:
+  destroy:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -105,7 +105,7 @@ jobs:
       - name: Terraform Destroy
         run: terraform destroy -auto-approve -input=false
 
-  deploy-application:
+  deployment-application:
     runs-on: ubuntu-latest
     defaults:
       run:
