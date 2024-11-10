@@ -5,6 +5,7 @@ on:
       - main
       - task_2
       - task3
+      - task_5
   workflow_dispatch:  # Allows manual trigger for 'apply'
 
 permissions:
