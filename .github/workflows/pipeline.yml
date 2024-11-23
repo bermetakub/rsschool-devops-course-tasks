@@ -3,9 +3,7 @@ on:
   push:
     branches:
       - main
-      - task_2
-      - task3
-      - task_5
+      - task_6
   workflow_dispatch:  # Allows manual trigger for 'apply'
 
 permissions:
@@ -78,7 +76,7 @@ jobs:
         shell: bash
         working-directory: .
     needs: terraform-plan
-    if: github.event_name == 'push'
+    if:  ${{ github.event_name == 'workflow_dispatch' }}
     steps:
       - name: Git checkout
         uses: actions/checkout@v3
