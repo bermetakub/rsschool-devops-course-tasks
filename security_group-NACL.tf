@@ -11,6 +11,13 @@ resource "aws_security_group" "public_sg" {
     }
   }
 
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"  # This allows all traffic, not restricted to TCP only
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
