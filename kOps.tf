@@ -18,7 +18,7 @@ resource "aws_instance" "kops_control_plane" {
               yum update -y
               
               # Install necessary packages for kOps
-              yum install -y curl git
+              yum install -y curl git --skip-broken
 
               # Install kOps
               curl -LO https://github.com/kubernetes/kops/releases/download/v1.28.0/kops-linux-amd64
@@ -29,7 +29,7 @@ resource "aws_instance" "kops_control_plane" {
               aws configure set region us-east-1
 
               # Create the kOps cluster configuration
-              export NAME=${var.name}
+              export NAME=bermeta.site
               export KOPS_STATE_STORE=s3://bermeta.terraform.tfstate.bucket
               
               # Initialize kOps cluster setup
