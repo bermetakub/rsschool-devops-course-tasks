@@ -35,9 +35,11 @@ spec:
         AWS_REGION = 'us-east-1'
         DOCKERFILE_REPO = 'https://github.com/bermetakub/rsschool-devops-course-tasks.git'
         DOCKERFILE_BRANCH = 'task_6'
-        GIT_REPO = 'https://github.com/wickett/word-cloud-generator.git' 
+        GIT_REPO = 'https://github.com/bermetakub/rsschool-devops-course-tasks.git' 
         GITHUB_REPO = 'https://github.com/bermetakub/rsschool-devops-course-tasks.git'
         GITHUB_BRANCH = 'task_6'
+        SONARQUBE_URL = 'http://3.80.167.34:9000'  # Replace with your actual SonarQube URL
+        SONARQUBE_TOKEN = credentials('eeb460fab172235f81f3bbda50f52bef888bfff7')  # Replace with your SonarQube authentication token
     }
     stages {
         stage('Checkout Dockerfile') {
@@ -66,8 +68,20 @@ spec:
             steps {
                 git url: "${GITHUB_REPO}", branch: "${GITHUB_BRANCH}" // Checkout here as well
                 container('docker') {
-                    sh "docker build -t word-cloud-generator-builder -f Dockerfile --target builder ."  
-                    sh "docker run --rm word-cloud-generator-builder go test -v ./..." 
+                    sh "docker build -t my-app -f Dockerfile ."  
+                }
+            }
+        }
+        stage('SonarQube Security Check') {
+            steps {
+                container('sonar-scanner') {
+                    sh """
+                    sonar-scanner \
+                        -Dsonar.projectKey=MyFirstProjectBermet \
+                        -Dsonar.sources=. \
+                        -Dsonar.host.url=${SONARQUBE_URL} \
+                        -Dsonar.login=${SONARQUBE_TOKEN}
+                    """
                 }
             }
         }
