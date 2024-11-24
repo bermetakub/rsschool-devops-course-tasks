@@ -3,9 +3,7 @@ on:
   push:
     branches:
       - main
-      - task_2
-      - task3
-      - task_5
+      - task_6
   workflow_dispatch:  # Allows manual trigger for 'apply'
 
 permissions:
@@ -37,7 +35,7 @@ jobs:
         run: terraform fmt -check
         continue-on-error: true
 
-  terraform-apply:
+  terraform-plan:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -78,7 +76,7 @@ jobs:
         shell: bash
         working-directory: .
     needs: terraform-plan
-    if: ${{ github.event_name == 'workflow_dispatch' }}
+    if:  ${{ github.event_name == 'workflow_dispatch' }}
     steps:
       - name: Git checkout
         uses: actions/checkout@v3
@@ -105,7 +103,7 @@ jobs:
       - name: Terraform Destroy
         run: terraform destroy -auto-approve -input=false
 
-  deploy-application:
+  terraform-apply:
     runs-on: ubuntu-latest
     defaults:
       run:

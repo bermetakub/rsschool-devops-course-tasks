@@ -43,11 +43,11 @@ variable "ami" {
 variable "instance_type" {
   description = "The type of the instance"
   type        = string
-  default     = "t2.micro"
+  default     = "t3.small"
 }
 
 variable "key_name" {
   description = "The name of the key pair to use for SSH access"
   type        = string
-  default     = "gh"
+  default     = "mykey"
 }
