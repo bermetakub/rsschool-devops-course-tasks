@@ -33,14 +33,14 @@ resource "aws_instance" "kops_control_plane" {
               export KOPS_STATE_STORE=s3://bermeta.terraform.tfstate.bucket
               
               # Initialize kOps cluster setup
-              kops create cluster --name $NAME --zones us-east-1 --state $KOPS_STATE_STORE --node-count 2 --node-size t3.small --master-size t3.small --yes
-              
+              kops create cluster --name $NAME --zones us-east-1a --state $KOPS_STATE_STORE --node-count 2 --node-size t3.small --control-plane-size t3.small --yes
               # Apply the configuration
               kops update cluster --name $NAME --state $KOPS_STATE_STORE --yes
               kops validate cluster --name $NAME --state $KOPS_STATE_STORE
 
               # Create kubeconfig
               mkdir -p /home/ubuntu/.kube
+
               cp /etc/kubernetes/kops/kops.yaml /home/ubuntu/.kube/config
               chown ubuntu:ubuntu /home/ubuntu/.kube/config
               chmod 644 /home/ubuntu/.kube/config
