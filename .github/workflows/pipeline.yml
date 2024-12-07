@@ -2,8 +2,7 @@ name: "Terraform action"
 on:
   push:
     branches:
-      - main
-      - task_6
+      - task_8
   workflow_dispatch:  # Allows manual trigger for 'apply'
 
 permissions:
