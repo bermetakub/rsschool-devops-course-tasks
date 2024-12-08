@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - task_8
+      - main
   workflow_dispatch:  # Allows manual trigger for 'apply'
 
 permissions:
@@ -107,7 +108,6 @@ jobs:
 
     - name: Terraform Destroy
       run: terraform destroy -input=true
-
 
   terraform-apply:
     runs-on: ubuntu-latest
