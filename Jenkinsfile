@@ -59,6 +59,15 @@ spec:
                 }
             }
         }
+        stage('Deploy Grafana') {
+            steps {
+                container('helm') {
+                    sh """
+                    helm upgrade --install grafana grafana/grafana --namespace monitoring --set adminPassword=admin
+                    """
+                }
+            }
+        }
     }
     post {
         always {
