@@ -41,6 +41,9 @@ jobs:
         run: |
           helm repo add bitnami https://charts.bitnami.com/bitnami 
           helm repo update
+      - name: Test AWS credentials
+        run: |
+          aws sts get-caller-identity
 
       - name: Deploy Grafana
         run: |
