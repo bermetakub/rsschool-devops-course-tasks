@@ -1,0 +1,11 @@
+grafana:
+  admin:
+    existingSecret: grafana-secret
+  datasources:
+    datasources.yaml:
+      apiVersion: 1
+      datasources:
+        - name: Prometheus
+          type: prometheus
+          access: proxy
+          url: http://aeb3f4c2a865c4d83ad47f5ff7fb6e56-1813974531.us-east-1.elb.amazonaws.com

@@ -1,0 +1,45 @@
+{
+    "dashboard": {
+      "title": "System Metrics",
+      "panels": [
+        {
+          "title": "node_load15",
+          "type": "graph",
+          "targets": [
+            {
+              "expr": "rate(node_load15[5m])"
+            }
+          ]
+        },
+        {
+          "title": "Node_Memory",
+          "type": "graph",
+          "targets": [
+            {
+              "expr": "node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes * 100"
+            }
+          ]
+        },
+        {
+          "title": "Ыtorage_operation_duration_seconds_bucket",
+          "type": "graph",
+          "targets": [
+            {
+              "expr": "rate(storage_operation_duration_seconds_bucket[5m])"
+            }
+          ]
+        },
+        {
+          "title": "Node_CPU",
+          "type": "graph",
+          "targets": [
+            {
+              "expr": "rate(node_cpu_seconds_total[5m])"
+            }
+          ]
+        }
+      ]
+    }
+  }
+  
+  
