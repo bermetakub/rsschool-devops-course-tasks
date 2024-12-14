@@ -47,7 +47,7 @@ jobs:
 
       - name: Deploy Grafana
         run: |
-          helm upgrade --install grafana bitnami/grafana -f grafana-values.yaml \
+          helm upgrade --install grafana bitnami/grafana -f grafana-values.yml \
             --set service.type=LoadBalancer \
             --set adminPassword=admin \
             --wait --timeout 10m
