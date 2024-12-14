@@ -1,144 +1,144 @@
-name: "Terraform action"
-on:
-  push:
-    branches:
-      - task_8
-      - main
-  workflow_dispatch:  # Allows manual trigger for 'apply'
+# name: "Terraform action"
+# on:
+#   push:
+#     branches:
+#       - task_8
+#       - main
+#   workflow_dispatch:  # Allows manual trigger for 'apply'
 
-permissions:
-  id-token: write  # Required for AWS OIDC connection
-  contents: read   # Required for actions/checkout
+# permissions:
+#   id-token: write  # Required for AWS OIDC connection
+#   contents: read   # Required for actions/checkout
 
-env:
-  TF_LOG: INFO
-  AWS_REGION: ${{ secrets.AWS_REGION }}
+# env:
+#   TF_LOG: INFO
+#   AWS_REGION: ${{ secrets.AWS_REGION }}
 
-jobs:
-  terraform-check:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
-        working-directory: .
-    steps:
-      - name: Git checkout
-        uses: actions/checkout@v3
+# jobs:
+#   terraform-check:
+#     runs-on: ubuntu-latest
+#     defaults:
+#       run:
+#         shell: bash
+#         working-directory: .
+#     steps:
+#       - name: Git checkout
+#         uses: actions/checkout@v3
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.9.6
+#       - name: Setup Terraform
+#         uses: hashicorp/setup-terraform@v2
+#         with:
+#           terraform_version: 1.9.6
 
-      - name: Terraform fmt check
-        id: fmt
-        run: terraform fmt -check
-        continue-on-error: true
+#       - name: Terraform fmt check
+#         id: fmt
+#         run: terraform fmt -check
+#         continue-on-error: true
 
-  terraform-plan:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
-        working-directory: .
-    needs: terraform-check
-    steps:
-      - name: Git checkout
-        uses: actions/checkout@v3
+#   terraform-plan:
+#     runs-on: ubuntu-latest
+#     defaults:
+#       run:
+#         shell: bash
+#         working-directory: .
+#     needs: terraform-check
+#     steps:
+#       - name: Git checkout
+#         uses: actions/checkout@v3
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.9.6
+#       - name: Setup Terraform
+#         uses: hashicorp/setup-terraform@v2
+#         with:
+#           terraform_version: 1.9.6
 
-      - name: Configure AWS credentials from AWS account
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: ${{ secrets.AWS_REGION }}
-          role-session-name: GitHub-OIDC-TERRAFORM
+#       - name: Configure AWS credentials from AWS account
+#         uses: aws-actions/configure-aws-credentials@v1
+#         with:
+#           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+#           aws-region: ${{ secrets.AWS_REGION }}
+#           role-session-name: GitHub-OIDC-TERRAFORM
 
-      - name: Terraform Init
-        id: init
-        env:
-          AWS_BUCKET_NAME: ${{ secrets.AWS_BUCKET_NAME }}
-          AWS_BUCKET_KEY_NAME: ${{ secrets.AWS_BUCKET_KEY_NAME }}
-        run: terraform init -backend-config="bucket=${AWS_BUCKET_NAME}" -backend-config="key=${AWS_BUCKET_KEY_NAME}" -backend-config="region=${AWS_REGION}"
+#       - name: Terraform Init
+#         id: init
+#         env:
+#           AWS_BUCKET_NAME: ${{ secrets.AWS_BUCKET_NAME }}
+#           AWS_BUCKET_KEY_NAME: ${{ secrets.AWS_BUCKET_KEY_NAME }}
+#         run: terraform init -backend-config="bucket=${AWS_BUCKET_NAME}" -backend-config="key=${AWS_BUCKET_KEY_NAME}" -backend-config="region=${AWS_REGION}"
 
-      - name: Terraform Plan
-        id: plan
-        run: terraform plan -no-color
+#       - name: Terraform Plan
+#         id: plan
+#         run: terraform plan -no-color
 
-  terraform-destroy:
-  runs-on: ubuntu-latest
-  defaults:
-    run:
-      shell: bash
-      working-directory: .
-  needs: terraform-plan
-  if: ${{ github.event_name == 'workflow_dispatch' }}
-  steps:
-    - name: Git checkout
-      uses: actions/checkout@v3
+#   terraform-destroy:
+#   runs-on: ubuntu-latest
+#   defaults:
+#     run:
+#       shell: bash
+#       working-directory: .
+#   needs: terraform-plan
+#   if: ${{ github.event_name == 'workflow_dispatch' }}
+#   steps:
+#     - name: Git checkout
+#       uses: actions/checkout@v3
 
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v2
-      with:
-        terraform_version: 1.9.6
+#     - name: Setup Terraform
+#       uses: hashicorp/setup-terraform@v2
+#       with:
+#         terraform_version: 1.9.6
 
-    - name: Configure AWS credentials from AWS account
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-        aws-region: ${{ secrets.AWS_REGION }}
-        role-session-name: GitHub-OIDC-TERRAFORM
+#     - name: Configure AWS credentials from AWS account
+#       uses: aws-actions/configure-aws-credentials@v1
+#       with:
+#         role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+#         aws-region: ${{ secrets.AWS_REGION }}
+#         role-session-name: GitHub-OIDC-TERRAFORM
 
-    - name: Terraform Init
-      id: init
-      env:
-        AWS_BUCKET_NAME: ${{ secrets.AWS_BUCKET_NAME }}
-        AWS_BUCKET_KEY_NAME: ${{ secrets.AWS_BUCKET_KEY_NAME }}
-      run: terraform init -backend-config="bucket=${AWS_BUCKET_NAME}" -backend-config="key=${AWS_BUCKET_KEY_NAME}" -backend-config="region=${AWS_REGION}"
+#     - name: Terraform Init
+#       id: init
+#       env:
+#         AWS_BUCKET_NAME: ${{ secrets.AWS_BUCKET_NAME }}
+#         AWS_BUCKET_KEY_NAME: ${{ secrets.AWS_BUCKET_KEY_NAME }}
+#       run: terraform init -backend-config="bucket=${AWS_BUCKET_NAME}" -backend-config="key=${AWS_BUCKET_KEY_NAME}" -backend-config="region=${AWS_REGION}"
 
-    - name: Manual Approval Before Destroy
-      uses: peter-evans/manual-approval-action@v2
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        approve_message: 'Please approve to destroy the resources.'
+#     - name: Manual Approval Before Destroy
+#       uses: peter-evans/manual-approval-action@v2
+#       with:
+#         github_token: ${{ secrets.GITHUB_TOKEN }}
+#         approve_message: 'Please approve to destroy the resources.'
 
-    - name: Terraform Destroy
-      run: terraform destroy -input=true
+#     - name: Terraform Destroy
+#       run: terraform destroy -input=true
 
-  terraform-apply:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
-        working-directory: .
-    needs: terraform-plan
-    if: ${{ github.event_name == 'workflow_dispatch' }}
-    steps:
-      - name: Git checkout
-        uses: actions/checkout@v3
+#   terraform-apply:
+#     runs-on: ubuntu-latest
+#     defaults:
+#       run:
+#         shell: bash
+#         working-directory: .
+#     needs: terraform-plan
+#     if: ${{ github.event_name == 'workflow_dispatch' }}
+#     steps:
+#       - name: Git checkout
+#         uses: actions/checkout@v3
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.9.6
+#       - name: Setup Terraform
+#         uses: hashicorp/setup-terraform@v2
+#         with:
+#           terraform_version: 1.9.6
 
-      - name: Configure AWS credentials from AWS account
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: ${{ secrets.AWS_REGION }}
-          role-session-name: GitHub-OIDC-TERRAFORM
+#       - name: Configure AWS credentials from AWS account
+#         uses: aws-actions/configure-aws-credentials@v1
+#         with:
+#           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+#           aws-region: ${{ secrets.AWS_REGION }}
+#           role-session-name: GitHub-OIDC-TERRAFORM
 
-      - name: Terraform Init
-        id: init
-        env:
-          AWS_BUCKET_NAME: ${{ secrets.AWS_BUCKET_NAME }}
-          AWS_BUCKET_KEY_NAME: ${{ secrets.AWS_BUCKET_KEY_NAME }}
-        run: terraform init -backend-config="bucket=${AWS_BUCKET_NAME}" -backend-config="key=${AWS_BUCKET_KEY_NAME}" -backend-config="region=${AWS_REGION}"
+#       - name: Terraform Init
+#         id: init
+#         env:
+#           AWS_BUCKET_NAME: ${{ secrets.AWS_BUCKET_NAME }}
+#           AWS_BUCKET_KEY_NAME: ${{ secrets.AWS_BUCKET_KEY_NAME }}
+#         run: terraform init -backend-config="bucket=${AWS_BUCKET_NAME}" -backend-config="key=${AWS_BUCKET_KEY_NAME}" -backend-config="region=${AWS_REGION}"
 
-      - name: Terraform Apply
-        run: terraform apply -auto-approve -input=true
+#       - name: Terraform Apply
+#         run: terraform apply -auto-approve -input=true
