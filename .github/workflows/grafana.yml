@@ -34,9 +34,10 @@ jobs:
 
       - name: Install kops
         run: |
-          curl -Lo kops https://github.com/kubernetes/kops/releases/download/v1.26.1/kops-linux-amd64
-          chmod +x kops
-          sudo mv kops /usr/local/bin/kops
+          curl -LO https://github.com/kubernetes/kops/releases/download/v1.26.1/kops-linux-amd64
+          chmod +x kops-linux-amd64
+          sudo mv kops-linux-amd64 /usr/local/bin/kops
+          kops version  # Verify installation
 
       - name: Set kOps cluster and get kubeconfig
         run: |
@@ -65,4 +66,4 @@ jobs:
         run: |
           helm upgrade --install grafana bitnami/grafana -f grafana-values.yml \
             --set service.type=LoadBalancer \
-            --set adminPassword=admin 
+            --set adminPassword=admin
