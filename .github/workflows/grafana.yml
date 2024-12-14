@@ -31,36 +31,16 @@ jobs:
           mkdir -p ~/.kube
           echo "${{ secrets.KUBE_CONFIG }}" > ~/.kube/config
           chmod 600 ~/.kube/config
-
-      - name: Install kops
-        run: |
-          curl -LO https://github.com/kubernetes/kops/releases/download/v1.26.1/kops-linux-amd64
-          chmod +x kops-linux-amd64
-          sudo mv kops-linux-amd64 /usr/local/bin/kops
-          kops version  # Verify installation
-
-      - name: Set kOps cluster and get kubeconfig
-        run: |
-          export KOPS_CLUSTER_NAME=bermeta.site
-          export KOPS_STATE_STORE=s3://bermeta.terraform.tfstate.bucket
-          kops export kubeconfig
-
-      - name: Display kubeconfig for debugging
-        run: |
-          cat ~/.kube/config
-
-      - name: Test Kubernetes connection
-        run: |
-          kubectl cluster-info
+        
+      - name: Setup Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: 'v3.12.0'
 
       - name: Add Grafana Helm repo
         run: |
           helm repo add bitnami https://charts.bitnami.com/bitnami 
           helm repo update
-
-      - name: Test AWS credentials
-        run: |
-          aws sts get-caller-identity
 
       - name: Deploy Grafana
         run: |
