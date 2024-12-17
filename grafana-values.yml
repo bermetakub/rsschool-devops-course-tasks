@@ -1,0 +1,29 @@
+service:
+  type: LoadBalancer
+  port: 80
+  targetPort: 3000
+
+datasources:
+  secretDefinition:
+    apiVersion: 1
+    datasources:
+    - name: Prometheus
+      type: prometheus
+      url: http://eb3f4c2a865c4d83ad47f5ff7fb6e56-1813974531.us-east-1.elb.amazonaws.com
+      isDefault: true
+
+admin:
+  existingSecret: grafana-secret
+  existingSecretPasswordKey: password
+
+alerting:
+  configMapName: grafana-alerts
+  
+smtp:
+  enabled: true
+  host: email-smtp.us-east-1.amazonaws.com:587
+  existingSecret: grafana-smtp-ses
+  existingSecretUserKey: user
+  existingSecretPasswordKey: password
+  fromName: "Grafana Alerts"
+  fromAddress: bermetalymkulova55@gmail.com

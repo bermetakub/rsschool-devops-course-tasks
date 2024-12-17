@@ -1,0 +1,52 @@
+name: Deploy Grafana to Kubernetes
+
+on:
+  push:
+    branches: 
+      - task_9
+  workflow_dispatch:
+
+env:
+  AWS_REGION: us-east-1
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v3
+
+      - name: Configure kubectl for kOps
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBE_CONFIG }}" > ~/.kube/config
+          chmod 600 ~/.kube/config
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: 'v3.12.0'
+
+      - name: Add Grafana Helm repo
+        run: |
+          helm repo add bitnami https://charts.bitnami.com/bitnami 
+          helm repo update
+
+      - name: Apply Grafana configuration and password
+        run: |
+          kubectl apply -f grafana-password.yml --validate=false
+          kubectl apply -f config_map.yml --validate=false
+
+      - name: Deploy Grafana
+        run: |
+          helm upgrade --install grafana bitnami/grafana -f grafana-values.yml
