@@ -33,6 +33,8 @@ To deploy Grafana in the Kubernetes cluster, follow these steps:
 ### Step 1: Add the Helm Repo
 Add the Bitnami Helm repository (used for deploying Grafana):
 
+---
+
 ```yaml
 helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
