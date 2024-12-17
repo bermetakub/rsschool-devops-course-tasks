@@ -44,8 +44,8 @@ jobs:
 
       - name: Apply Grafana configuration and password
         run: |
-          kubectl apply -f grafana-password.yml
-          kubectl apply -f config_map.yml
+          kubectl apply -f grafana-password.yml --validate=false
+          kubectl apply -f config_map.yml --validate=false
 
       - name: Deploy Grafana
         run: |
